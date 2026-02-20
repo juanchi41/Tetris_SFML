@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Tetris_SFML.vcxproj" Id="c9026d3d-3e92-41ea-9b4f-e56abd9905c1" />
+</Solution>
