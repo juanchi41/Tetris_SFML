@@ -1,8 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <string>
-#include "Spritesheet.h"
 #include <SFML/Graphics.hpp>
 
 class TetrisManager;
@@ -24,7 +21,7 @@ public:
 		}
 	}
 
-	const sf::Sprite GetSprite() const { return m_sprite; }
+	const sf::Sprite& GetSprite() const { return m_sprite; }
 
 private:
 	sf::Texture m_texture;
@@ -47,16 +44,18 @@ private:
 	void RenderCurrGameBoard();
 	void RenderCurrFigure();
 	void RenderNextFigure();
-	void RenderFigure(const FigureBase* a_pCurrFigure, int a_offsetX, int a_offsetY, double a_perc = 1.0);
+	void RenderFigure(const FigureBase* a_pCurrFigure, float a_offsetX, float a_offsetY, double a_perc = 1.0);
 	void RenderRect(const sf::RectangleShape& a_rect);
 	void RenderCurrentScore();
 	void RenderCurrentLevel();
-	void DrawText(const std::string& a_text, sf::Vector2u a_position);
 
 	sf::RenderWindow* m_pWindow = nullptr;
 	const TetrisManager* m_pTetrisManager = nullptr;
 	SpriteInfo m_mainScreenSprite;
 	SpriteInfo m_playingBgSprite;
 	sf::Font m_font;
-	sf::Text m_text;
+	sf::Text m_pauseText;
+	sf::Text m_gameOverText;
+	sf::Text m_scoreText;
+	sf::Text m_levelText;
 };

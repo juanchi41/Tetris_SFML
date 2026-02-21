@@ -27,10 +27,7 @@ void TetrisManager::Clear()
 
 void TetrisManager::ClearRow(std::vector<sf::Color>& a_row)
 {
-	for (sf::Color& item : a_row)
-	{
-		memset(&item, 0, sizeof(sf::Color));
-	}
+	a_row.assign(a_row.size(), sf::Color());
 }
 
 void TetrisManager::Start(int a_level)

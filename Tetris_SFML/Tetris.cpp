@@ -16,7 +16,7 @@ Tetris::Tetris()
 void Tetris::StartGame()
 {
 	m_tetrisManager.Init();
-	m_viewManager.Init(m_pWindow, &m_tetrisManager);
+	m_viewManager.Init(m_pWindow.get(), &m_tetrisManager);
 	m_level = 1;
 
 	Start();
@@ -39,43 +39,41 @@ void Tetris::Start()
 
 void Tetris::HandleEvents()
 {
-	SDL_Event event;
-	SDL_PollEvent(&event);
+	PollEvents();
 
-	switch (event.type)
+	if (m_gameStatus == eGameStatus::PLAYING)
 	{
-	case SDL_QUIT:
-		m_isRunning = false;
-		break;
-	case SDL_KEYDOWN:
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
 		{
-			switch (event.key.keysym.sym)
+			m_tetrisManager.MoveDown();
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+		{
+			m_tetrisManager.MoveToLeft();
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+		{
+			m_tetrisManager.MoveToRight();
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
+		{
+			m_tetrisManager.Rotate();
+		}
+	}
+}
+
+void Tetris::PollEvents()
+{
+	while (std::optional<sf::Event> event = m_pWindow->pollEvent())
+	{
+		if (event->is<sf::Event::Closed>())
+		{
+			m_isRunning = false;
+		}
+		else if (event->is<sf::Event::KeyPressed>())
+		{
+			if (event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Enter)
 			{
-			case SDLK_LEFT:
-				if (m_gameStatus == eGameStatus::PLAYING)
-				{
-					m_tetrisManager.MoveToLeft();
-				}
-				break;
-			case SDLK_RIGHT:
-				if (m_gameStatus == eGameStatus::PLAYING)
-				{
-					m_tetrisManager.MoveToRight();
-				}
-				break;
-			case SDLK_DOWN:
-				if (m_gameStatus == eGameStatus::PLAYING)
-				{
-					m_tetrisManager.MoveDown();
-				}
-				break;
-			case SDLK_SPACE:
-				if (m_gameStatus == eGameStatus::PLAYING)
-				{
-					m_tetrisManager.Rotate();
-				}
-				break;
-			case SDLK_RETURN:
 				if (m_gameStatus == eGameStatus::MAIN_MENU)
 				{
 					m_gameStatus = eGameStatus::PLAYING;
@@ -85,8 +83,9 @@ void Tetris::HandleEvents()
 				{
 					m_gameStatus = eGameStatus::MAIN_MENU;
 				}
-				break;
-			case SDLK_ESCAPE:
+			}
+			else if (event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Escape)
+			{
 				if (m_gameStatus == eGameStatus::PLAYING)
 				{
 					m_gameStatus = eGameStatus::PAUSE_MENU;
@@ -95,14 +94,8 @@ void Tetris::HandleEvents()
 				{
 					m_gameStatus = eGameStatus::PLAYING;
 				}
-				break;
-			default:
-				break;
 			}
 		}
-		break;
-	default:
-		break;
 	}
 }
 

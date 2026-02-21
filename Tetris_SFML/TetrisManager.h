@@ -50,7 +50,7 @@ private:
 	bool m_bGameOver = false;
 	int m_nTotalLines = 0;
 	int m_level = 1;
-	std::uint32_t m_lastTick = 0;
+	std::int32_t m_lastTick = 0;
 	sf::Clock m_clock;
 	std::unique_ptr<FigureBase> m_pCurrFigure;
 	std::unique_ptr<FigureBase> m_pNextFigure;

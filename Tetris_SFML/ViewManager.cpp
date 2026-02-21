@@ -2,18 +2,24 @@
 #include "Tetris.h"
 #include "TetrisManager.h"
 
-constexpr int INITIAL_X_POS = 337;
-constexpr int INITIAL_Y_POS = 119;
-constexpr int NEXT_FUGURE_X_POS = 700;
-constexpr int NEXT_FUGURE_Y_POS = 294;
-constexpr int RECT_X_SIZE = 28;
-constexpr int RECT_Y_SIZE = 21;
-constexpr int SCORE_X_POS = 675;
-constexpr int SCORE_Y_POS = 170;
+constexpr float INITIAL_X_POS = 337.f;
+constexpr float INITIAL_Y_POS = 119.f;
+constexpr float NEXT_FUGURE_X_POS = 700.f;
+constexpr float NEXT_FUGURE_Y_POS = 294.f;
+constexpr float RECT_X_SIZE = 28.f;
+constexpr float RECT_Y_SIZE = 21.f;
+constexpr float SCORE_X_POS = 675.f;
+constexpr float SCORE_Y_POS = 170.f;
 
-ViewManager::ViewManager() : m_font("arial.ttf"), m_text(m_font)
+ViewManager::ViewManager() : m_pauseText(m_font), m_gameOverText(m_font), m_scoreText(m_font), m_levelText(m_font)
 {
-	
+	m_font.openFromFile("arial.ttf");
+	m_pauseText.setPosition({ 300.f, 250.f });
+	m_pauseText.setString("PAUSE");
+	m_gameOverText.setPosition({ 300.f, 250.f });
+	m_gameOverText.setString("GAME OVER");
+	m_scoreText.setPosition({ SCORE_X_POS, SCORE_Y_POS });
+	m_levelText.setPosition({ SCORE_X_POS, 416.f });
 }
 
 void ViewManager::Init(sf::RenderWindow* a_pWindow, const TetrisManager* a_pTetrisManager)
@@ -52,13 +58,13 @@ void ViewManager::ShowPauseMenu()
 {
 	m_pWindow->clear();
 	m_pWindow->draw(m_mainScreenSprite.GetSprite());
-	DrawText("PAUSE", 350, 250, 40, 50);
+	m_pWindow->draw(m_pauseText);
 	m_pWindow->display();
 }
 
 void ViewManager::GameOver()
 {
-	DrawText("GAME OVER", 300, 250, 40, 50);
+	m_pWindow->draw(m_gameOverText);
 	m_pWindow->display();
 }
 
@@ -78,7 +84,7 @@ void ViewManager::RenderCurrGameBoard()
 
 void ViewManager::RenderCurrFigure()
 {
-	RenderFigure(m_pTetrisManager->GetCurrFigure(), INITIAL_X_POS, INITIAL_Y_POS);
+	RenderFigure(m_pTetrisManager->GetCurrFigure(), INITIAL_X_POS, INITIAL_Y_POS, 1.0);
 }
 
 void ViewManager::RenderNextFigure()
@@ -86,19 +92,16 @@ void ViewManager::RenderNextFigure()
 	RenderFigure(m_pTetrisManager->GetNextFigure(), NEXT_FUGURE_X_POS, NEXT_FUGURE_Y_POS, 0.7);
 }
 
-void ViewManager::RenderFigure(const FigureBase* a_pCurrFigure, int a_offsetX, int a_offsetY, double a_perc /*= 1.0*/)
+void ViewManager::RenderFigure(const FigureBase* a_pCurrFigure, float a_offsetX, float a_offsetY, double a_perc)
 {
-	SDL_Rect rect;
+	sf::RectangleShape rect({ float(RECT_X_SIZE * a_perc), float(RECT_Y_SIZE * a_perc) });
 
-	rect.w = int(RECT_X_SIZE * a_perc);
-	rect.h = int(RECT_Y_SIZE * a_perc);
-
-	for (const SDL_Point& point : a_pCurrFigure->GetPoints())
+	for (const sf::Vector2i& point : a_pCurrFigure->GetPoints())
 	{
-		rect.x = a_offsetX + (point.x * int(RECT_X_SIZE * a_perc));
-		rect.y = a_offsetY + (point.y * int(RECT_Y_SIZE * a_perc));
+		rect.setPosition({ a_offsetX + float(point.x * int(RECT_X_SIZE * a_perc)), a_offsetY + float(point.y * int(RECT_Y_SIZE * a_perc)) });
+		rect.setFillColor(a_pCurrFigure->GetColor());
 
-		RenderRect(rect, a_pCurrFigure->GetColor());
+		RenderRect(rect);
 	}
 }
 
@@ -117,15 +120,12 @@ void ViewManager::RenderRect(const sf::RectangleShape& a_rect)
 
 void ViewManager::RenderCurrentScore()
 {
-	DrawText(std::to_string(m_pTetrisManager->GetTotalLines()), SCORE_X_POS, SCORE_Y_POS);
+	m_scoreText.setString(std::to_string(m_pTetrisManager->GetTotalLines()));
+	m_pWindow->draw(m_scoreText);
 }
 
 void ViewManager::RenderCurrentLevel()
 {
-	DrawText(std::to_string(m_pTetrisManager->GetCurrentLevel()), SCORE_X_POS, 416);
-}
-
-void ViewManager::DrawText(const std::string& a_text, sf::Vector2u a_position)
-{
-
+	m_levelText.setString(std::to_string(m_pTetrisManager->GetCurrentLevel()));
+	m_pWindow->draw(m_levelText);
 }

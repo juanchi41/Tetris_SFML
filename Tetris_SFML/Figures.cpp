@@ -4,7 +4,7 @@ void FigureBase::Rotate()
 {
 	if (CanRotate())
 	{
-		/*sf::Vector2i offset = m_points[GetPivotPoint()];
+		sf::Vector2i offset = m_points[GetPivotPoint()];
 
 		Move(-offset.x, -offset.y);
 
@@ -15,12 +15,7 @@ void FigureBase::Rotate()
 			point.y = -temp.x;
 		}
 
-		Move(offset.x, offset.y);*/
-
-		for (sf::Vector2i& point : m_points)
-		{
-			point.rotatedBy(sf::degrees(-90.f));
-		}
+		Move(offset.x, offset.y);
 	}
 }
 
@@ -28,7 +23,7 @@ void FigureBase::UndoRotate()
 {
 	if (CanRotate())
 	{
-		/*sf::Vector2i offset = m_points[GetPivotPoint()];
+		sf::Vector2i offset = m_points[GetPivotPoint()];
 
 		Move(-offset.x, -offset.y);
 
@@ -39,22 +34,17 @@ void FigureBase::UndoRotate()
 			point.y = temp.x;
 		}
 
-		Move(offset.x, offset.y);*/
-
-		for (sf::Vector2i& point : m_points)
-		{
-			point.rotatedBy(sf::degrees(-90.f));
-		}
+		Move(offset.x, offset.y);
 	}
 }
 
 
-void FigureBase::Move(sf::Vector2i a_offset)
+void FigureBase::Move(int a_offsetX, int a_offsetY)
 {
 	for (sf::Vector2i& point : m_points)
 	{
-		point.x += a_offset.x;
-		point.y += a_offset.y;
+		point.x += a_offsetX;
+		point.y += a_offsetY;
 	}
 }
 

@@ -43,7 +43,7 @@ public:
 	const sf::Color& GetColor() const { return m_color; }
 
 protected:
-	void Move(sf::Vector2i a_offset);
+	void Move(int a_offsetX, int a_offsetY);
 
 	std::vector<sf::Vector2i> m_points;
 	sf::Color m_color;
