@@ -21,6 +21,7 @@ public:
 		}
 	}
 
+	void SetPosition(sf::Vector2f position) { m_sprite.setPosition(position); }
 	const sf::Sprite& GetSprite() const { return m_sprite; }
 
 private:
@@ -45,7 +46,6 @@ private:
 	void RenderCurrFigure();
 	void RenderNextFigure();
 	void RenderFigure(const FigureBase* a_pCurrFigure, float a_offsetX, float a_offsetY, double a_perc = 1.0);
-	void RenderRect(const sf::RectangleShape& a_rect);
 	void RenderCurrentScore();
 	void RenderCurrentLevel();
 

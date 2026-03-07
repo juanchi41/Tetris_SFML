@@ -24,7 +24,6 @@ public:
 private:
 	void Start();
 	void HandleEvents();
-	void PollEvents();
 	void Update();
 	void Render();
 	void CheckGameOver();

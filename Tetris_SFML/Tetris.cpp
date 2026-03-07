@@ -39,31 +39,6 @@ void Tetris::Start()
 
 void Tetris::HandleEvents()
 {
-	PollEvents();
-
-	if (m_gameStatus == eGameStatus::PLAYING)
-	{
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
-		{
-			m_tetrisManager.MoveDown();
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-		{
-			m_tetrisManager.MoveToLeft();
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-		{
-			m_tetrisManager.MoveToRight();
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
-		{
-			m_tetrisManager.Rotate();
-		}
-	}
-}
-
-void Tetris::PollEvents()
-{
 	while (std::optional<sf::Event> event = m_pWindow->pollEvent())
 	{
 		if (event->is<sf::Event::Closed>())
@@ -93,6 +68,25 @@ void Tetris::PollEvents()
 				else if (m_gameStatus == eGameStatus::PAUSE_MENU)
 				{
 					m_gameStatus = eGameStatus::PLAYING;
+				}
+			}
+			else if (m_gameStatus == eGameStatus::PLAYING)
+			{
+				if (event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Down)
+				{
+					m_tetrisManager.MoveDown();
+				}
+				else if (event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Left)
+				{
+					m_tetrisManager.MoveToLeft();
+				}
+				else if (event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Right)
+				{
+					m_tetrisManager.MoveToRight();
+				}
+				else if (event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Space)
+				{
+					m_tetrisManager.Rotate();
 				}
 			}
 		}

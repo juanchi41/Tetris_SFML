@@ -1,6 +1,7 @@
 #include "ViewManager.h"
 #include "Tetris.h"
 #include "TetrisManager.h"
+#include <iostream>
 
 constexpr float INITIAL_X_POS = 337.f;
 constexpr float INITIAL_Y_POS = 119.f;
@@ -8,12 +9,17 @@ constexpr float NEXT_FUGURE_X_POS = 700.f;
 constexpr float NEXT_FUGURE_Y_POS = 294.f;
 constexpr float RECT_X_SIZE = 28.f;
 constexpr float RECT_Y_SIZE = 21.f;
+constexpr float OUTLINE_THICKNESS = 1.f;
 constexpr float SCORE_X_POS = 675.f;
 constexpr float SCORE_Y_POS = 170.f;
+const std::string ARIAL_FONT = "Tetris_SFML\\arial.ttf";
+const std::string MAIN_SCREEN_PNG = "Tetris_SFML\\MainScreen.png";
+const std::string BACKGROUND_PNG = "Tetris_SFML\\tetris_900x600.png";
 
 ViewManager::ViewManager() : m_pauseText(m_font), m_gameOverText(m_font), m_scoreText(m_font), m_levelText(m_font)
 {
-	m_font.openFromFile("arial.ttf");
+	if (!m_font.openFromFile(ARIAL_FONT))
+		std::cout << "Error while loading Arial font \n";
 	m_pauseText.setPosition({ 300.f, 250.f });
 	m_pauseText.setString("PAUSE");
 	m_gameOverText.setPosition({ 300.f, 250.f });
@@ -28,8 +34,10 @@ void ViewManager::Init(sf::RenderWindow* a_pWindow, const TetrisManager* a_pTetr
 	m_pTetrisManager = a_pTetrisManager;
 
 	// Load Texture atlas for text rendering
-	m_mainScreenSprite.SetTexture("MainScreen.png");
-	m_playingBgSprite.SetTexture("tetris_900x600.png");
+	m_mainScreenSprite.SetTexture(MAIN_SCREEN_PNG);
+	m_mainScreenSprite.SetPosition({ 0.f, 0.f });
+	m_playingBgSprite.SetTexture(BACKGROUND_PNG);
+	m_playingBgSprite.SetPosition({ 0.f, 0.f });
 }
 
 void ViewManager::ShowMainMenu()
@@ -71,14 +79,16 @@ void ViewManager::GameOver()
 void ViewManager::RenderCurrGameBoard()
 {
 	const std::vector<PointToDraw>& points = m_pTetrisManager->GetGameBoardPoints();
-	sf::RectangleShape rect({ RECT_X_SIZE, RECT_Y_SIZE });
+	sf::RectangleShape rect({ RECT_X_SIZE - (OUTLINE_THICKNESS * 2), RECT_Y_SIZE - (OUTLINE_THICKNESS * 2) });
+
+	rect.setOutlineColor(sf::Color::White);
+	rect.setOutlineThickness(OUTLINE_THICKNESS);
 
 	for (const PointToDraw& point : points)
 	{
-		rect.setPosition({ INITIAL_X_POS + (point.m_point.x * RECT_X_SIZE), INITIAL_Y_POS + (point.m_point.y * RECT_Y_SIZE) });
+		rect.setPosition({ float(INITIAL_X_POS + (point.m_point.x * RECT_X_SIZE)) + OUTLINE_THICKNESS, float(INITIAL_Y_POS + (point.m_point.y * RECT_Y_SIZE)) + OUTLINE_THICKNESS });
 		rect.setFillColor(point.m_color);
-		
-		RenderRect(rect);
+		m_pWindow->draw(rect);
 	}
 }
 
@@ -94,28 +104,17 @@ void ViewManager::RenderNextFigure()
 
 void ViewManager::RenderFigure(const FigureBase* a_pCurrFigure, float a_offsetX, float a_offsetY, double a_perc)
 {
-	sf::RectangleShape rect({ float(RECT_X_SIZE * a_perc), float(RECT_Y_SIZE * a_perc) });
+	sf::RectangleShape rect({ float((RECT_X_SIZE - (OUTLINE_THICKNESS * 2)) * a_perc), float((RECT_Y_SIZE - (OUTLINE_THICKNESS * 2)) * a_perc) });
+
+	rect.setOutlineColor(sf::Color::White);
+	rect.setOutlineThickness(OUTLINE_THICKNESS);
+	rect.setFillColor(a_pCurrFigure->GetColor());
 
 	for (const sf::Vector2i& point : a_pCurrFigure->GetPoints())
 	{
-		rect.setPosition({ a_offsetX + float(point.x * int(RECT_X_SIZE * a_perc)), a_offsetY + float(point.y * int(RECT_Y_SIZE * a_perc)) });
-		rect.setFillColor(a_pCurrFigure->GetColor());
-
-		RenderRect(rect);
+		rect.setPosition({ a_offsetX + float(point.x * int(RECT_X_SIZE * a_perc)) + OUTLINE_THICKNESS, a_offsetY + float(point.y * int(RECT_Y_SIZE * a_perc)) + OUTLINE_THICKNESS });
+		m_pWindow->draw(rect);
 	}
-}
-
-void ViewManager::RenderRect(const sf::RectangleShape& a_rect)
-{
-	m_pWindow->draw(a_rect);
-
-	/*SDL_SetRenderDrawColor(m_pRenderer, a_color.r, a_color.g, a_color.b, a_color.a);
-	SDL_RenderFillRect(m_pRenderer, &a_rect);
-	SDL_SetRenderDrawColor(m_pRenderer, 255, 255, 255, a_color.a);
-	SDL_RenderDrawLine(m_pRenderer, a_rect.x, a_rect.y, (a_rect.x + a_rect.w), a_rect.y);
-	SDL_RenderDrawLine(m_pRenderer, a_rect.x, a_rect.y, a_rect.x, (a_rect.y + a_rect.h));
-	SDL_RenderDrawLine(m_pRenderer, (a_rect.x + a_rect.w), a_rect.y, (a_rect.x + a_rect.w), (a_rect.y + a_rect.h));
-	SDL_RenderDrawLine(m_pRenderer, a_rect.x, (a_rect.y + a_rect.h), (a_rect.x + a_rect.w), (a_rect.y + a_rect.h));*/
 }
 
 void ViewManager::RenderCurrentScore()
